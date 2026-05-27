@@ -1,0 +1,24 @@
+# Node.js - Dependências
+# Nunca enviamos a pasta node_modules pois ela é reconstruída com 'npm install'
+backend/node_modules/
+node_modules/
+
+# Banco de Dados Local
+# O arquivo SQLite contém os seus dados reais; geralmente não o enviamos 
+# para que o repositório comece com um banco limpo
+backend/database.sqlite
+backend/database.sqlite-journal
+
+# Logs e Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Pastas de ambiente/segurança (caso você use no futuro)
+.env
+.env.local

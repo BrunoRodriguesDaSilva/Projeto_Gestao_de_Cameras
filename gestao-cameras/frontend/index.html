@@ -1,0 +1,72 @@
+<!--Bruno Rodrigues da Silva - Breaker-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestaCam - Login</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- CSS Customizado para barra de rolagem e efeitos -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex items-center justify-center p-4">
+
+    <!-- CONTAINER PRINCIPAL DO LOGIN -->
+    <div class="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+        
+        <!-- CABEÇALHO DO LOGIN -->
+        <div class="p-8 pb-4 text-center">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600/10 rounded-2xl mb-4 border border-indigo-500/20">
+                <span class="text-3xl">📹</span>
+            </div>
+            <h1 class="text-2xl font-bold text-white tracking-tight">GestaCam</h1>
+            <p class="text-slate-400 text-sm mt-2">Gerenciamento Centralizado de Câmeras</p>
+        </div>
+
+        <!-- FORMULÁRIO -->
+        <div class="p-8 pt-4">
+            <form id="loginForm" class="space-y-5">
+                
+                <!-- MENSAGEM DE ERRO (Escondida por padrão via 'hidden') -->
+                <div id="errorMessage" class="hidden bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-xs text-center animate-pulse">
+                    ⚠️ Usuário ou senha incorretos!
+                </div>
+
+                <!-- CAMPO USUÁRIO -->
+                <div>
+                    <label for="username" class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Usuário</label>
+                    <input type="text" id="username" required autocomplete="username"
+                        placeholder="Ex: admin"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                </div>
+
+                <!-- CAMPO SENHA -->
+                <div>
+                    <label for="password" class="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wider">Senha</label>
+                    <input type="password" id="password" required autocomplete="current-password"
+                        placeholder="••••••••"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                </div>
+
+                <!-- BOTÃO DE ENTRAR -->
+                <button type="submit" 
+                    class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl text-sm transition-all shadow-lg shadow-indigo-600/20 active:scale-[0.98]">
+                    Acessar Painel
+                </button>
+
+            </form>
+        </div>
+
+        <!-- RODAPÉ DO LOGIN -->
+        <div class="p-6 bg-slate-900/50 border-t border-slate-700 text-center">
+            <p class="text-slate-500 text-[10px] uppercase tracking-widest">
+                Segurança Corporativa v1.0
+            </p>
+        </div>
+    </div>
+
+    <!-- Script de Lógica de Autenticação -->
+    <script src="js/login.js"></script>
+</body>
+</html>

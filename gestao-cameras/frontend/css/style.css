@@ -1,0 +1,61 @@
+/* ============================================================
+   ESTILOS GLOBAIS - GESTACAM
+   ============================================================ */
+
+/* 1. PERSONALIZAÇÃO DA BARRA DE ROLAGEM (Scrollbar)
+   Deixa a barra de rolagem fina e escura para combinar com o tema Slate 900 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a; /* Cor correspondente ao bg-slate-900 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155; /* Cor correspondente ao bg-slate-700 */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569; /* Cor correspondente ao bg-slate-600 */
+}
+
+/* 2. AJUSTES DO GRÁFICO (Canvas)
+   Garante que o gráfico de rosca não "estique" ou quebre o layout */
+#statusChart {
+    max-height: 160px !important;
+    max-width: 100% !important;
+    margin: 0 auto;
+}
+
+/* 3. ESTILIZAÇÃO DE TABELA
+   Garante que o texto do IP (mono) fique bem legível */
+.font-mono {
+    font-family: 'ui-monospace', 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+    letter-spacing: 0.025em;
+}
+
+/* 4. ANIMAÇÃO SUAVE PARA MODAIS
+   Adiciona uma transição leve ao aparecer/desaparecer */
+#cameraModal {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* 5. PREVENÇÃO DE SELEÇÃO DE TEXTO NOS BOTÕES
+   Evita que o usuário selecione o texto do botão ao clicar rápido */
+button {
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 6. AJUSTE DE INPUTS NO MODO ESCURO
+   Remove o fundo branco automático que alguns navegadores colocam no preenchimento automático */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: white;
+    -webkit-box-shadow: 0 0 0px 1000px #0f172a inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
