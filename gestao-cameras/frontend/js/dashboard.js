@@ -20,7 +20,7 @@ async function carregarCamerasDoServidor() {
     try {
         const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Erro na requisição");
-        
+
         cameras = await response.json();
         renderizarDashboard();
     } catch (error) {
@@ -41,7 +41,7 @@ function validarIPv4(ip) {
 function renderizarDashboard() {
     const tableBody = document.getElementById("cameraTableBody");
     const busca = document.getElementById("searchBar").value.toLowerCase();
-    
+
     tableBody.innerHTML = "";
 
     // Filtra as câmeras por Status e por Nome/IP ao mesmo tempo
@@ -92,6 +92,12 @@ function atualizarGrafico() {
 
     const ctx = document.getElementById('statusChart').getContext('2d');
 
+    // Adicione isso na função que conta as câmeras (onde você atualiza o Chart.js):
+    document.getElementById('numTotal').innerText = listaCameras.length;
+    document.getElementById('numAtivas').innerText = ativas;
+    document.getElementById('numInativas').innerText = inativas;
+    document.getElementById('numManutencao').innerText = manutencao;
+
     // Destrói o gráfico anterior para não sobrepor dados ao recriar
     if (chartInstance) {
         chartInstance.destroy();
@@ -112,13 +118,13 @@ function atualizarGrafico() {
         },
         options: {
             plugins: {
-                legend: { 
-                    position: 'right', 
-                    labels: { color: '#94A3B8', font: { size: 11 } } 
+                legend: {
+                    position: 'right',
+                    labels: { color: '#94A3B8', font: { size: 11 } }
                 },
                 tooltip: {
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             let valor = context.raw || 0;
                             let porcentagem = ((valor / total) * 100).toFixed(1);
                             return ` ${context.label}: ${valor} (${porcentagem}%)`;
@@ -137,11 +143,11 @@ function atualizarGrafico() {
 // ==========================================
 function definirFiltroStatus(status) {
     filtroStatusAtual = status;
-    
+
     // Altera visualmente qual botão está selecionado no topo
     ['Todos', 'Ativa', 'Inativa', 'Manutenção'].forEach(s => {
         const btn = document.getElementById(`btn-filtro-${s}`);
-        if(s === status) {
+        if (s === status) {
             btn.className = "px-4 py-1.5 rounded-lg text-xs font-medium transition-colors bg-indigo-600 text-white";
         } else {
             btn.className = "px-4 py-1.5 rounded-lg text-xs font-medium transition-colors bg-slate-700 hover:bg-slate-600 text-slate-300";
