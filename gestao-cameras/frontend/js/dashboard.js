@@ -7,13 +7,19 @@ let chartInstance = null;
 // ==========================================
 // INICIALIZAÇÃO E SEGURANÇA
 // ==========================================
+// Modifique o bloco inicial do seu dashboard.js para ficar assim:
 document.addEventListener("DOMContentLoaded", () => {
     // Verifica se o usuário passou pela tela de login
     if (localStorage.getItem('isLogged') !== 'true') {
         window.location.href = 'index.html';
         return;
     }
+    
+    // Carrega os dados iniciais do servidor
     carregarCamerasDoServidor();
+
+    // Roda a primeira verificação automática logo após carregar a página
+    setTimeout(executarPingAutomatico, 2000); // Aguarda 2 segundos para dar tempo do servidor responder à primeira carga
 });
 
 // BUSCAR DADOS DO BACKEND (API Node.js)
@@ -255,27 +261,121 @@ function logout() {
     window.location.href = 'index.html';
 }
 
-    async function testarConexao(ip, botao) {
-        const textoOriginal = botao.innerText;
-        botao.innerText = "⚡ Testando...";
-        botao.disabled = true;
+async function testarConexao(ip, botao) {
+    const textoOriginal = botao.innerText;
+    botao.innerText = "⚡ Testando...";
+    botao.disabled = true;
+
+    try {
+        // 1. Faz a chamada para a rota de ping do backend
+        const responsePing = await fetch(`http://localhost:3000/api/cameras/ping/${ip}`);
+        const resultadoPing = await responsePing.json();
+
+        // 2. Encontra a câmera correspondente na nossa lista local para pegar o ID e o Nome
+        const cameraOriginal = cameras.find(c => c.ip === ip);
+
+        if (!cameraOriginal) {
+            alert("⚠️ Câmera não encontrada na lista local.");
+            return;
+        }
+
+        // 3. Define o novo status com base no resultado do ping
+        const novoStatus = resultadoPing.online ? "Ativa" : "Inativa";
+
+        // Se o status já for o mesmo, avisa o usuário e não gasta requisição à toa
+        if (cameraOriginal.status === novoStatus) {
+            if (resultadoPing.online) {
+                alert(`✅ A câmera (${ip}) respondeu ao ping e já consta como "Ativa".`);
+            } else {
+                alert(`❌ A câmera (${ip}) não respondeu ao ping e já consta como "Inativa".`);
+            }
+            return;
+        }
+
+        // 4. Monta o objeto atualizado mantendo o Nome e o IP originais
+        const dadosAtualizados = {
+            nome: cameraOriginal.nome,
+            ip: cameraOriginal.ip,
+            status: novoStatus
+        };
+
+        // 5. Envia a atualização (PUT) para o seu servidor salvar no banco SQLite
+        const responseUpdate = await fetch(`${API_URL}/${cameraOriginal.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(dadosAtualizados)
+        });
+
+        if (responseUpdate.ok) {
+            // 6. Recarrega a tela para atualizar o Gráfico, a Tabela e os Contadores automaticamente
+            await carregarCamerasDoServidor();
+
+            if (resultadoPing.online) {
+                alert(`✅ Sucesso! A câmera respondeu ao ping e seu status foi alterado para "Ativa".`);
+            } else {
+                alert(`❌ Alerta! A câmera não respondeu e seu status foi alterado para "Inativa".`);
+            }
+        } else {
+            alert("⚠️ O ping funcionou, mas houve um erro ao salvar o novo status no servidor.");
+        }
+
+    } catch (error) {
+        console.error("Erro ao testar e atualizar status da câmera:", error);
+        alert("⚠️ Erro interno ao tentar realizar o teste automático.");
+    } finally {
+        // Restaura o botão original
+        botao.innerText = textoOriginal;
+        botao.disabled = false;
+    }
+}
+
+// ==========================================
+// MONITORAMENTO AUTOMÁTICO (PING PERIÓDICO)
+// ==========================================
+
+async function executarPingAutomatico() {
+    console.log("⚡ Iniciando verificação automática de rotina das câmeras...");
+    
+    // Se não houver câmeras cadastradas, não faz nada
+    if (cameras.length === 0) return;
+
+    // Percorre cada câmera cadastrada e roda o teste em segundo plano
+    for (const camera of cameras) {
+
+        if (camera.status === "Manutenção") continue; // Pula essa câmera e vai para a próxima
 
         try {
-            // Faz a chamada para a nova rota de ping do backend
-            const response = await fetch(`http://localhost:3000/api/cameras/ping/${ip}`);
-            const resultado = await response.json();
+            // Chama a rota de ping do backend
+            const responsePing = await fetch(`http://localhost:3000/api/cameras/ping/${camera.ip}`);
+            const resultadoPing = await responsePing.json();
 
-            if (resultado.online) {
-                alert(`✅ Sucesso! A câmera no IP ${ip} respondeu ao ping com sucesso e está ativa na rede.`);
-            } else {
-                alert(`❌ Falha! Não foi possível obter resposta do IP ${ip}. Verifique os cabos ou a alimentação da câmera.`);
+            // Define o novo status com base no ping
+            const novoStatus = resultadoPing.online ? "Ativa" : "Inativa";
+
+            // Só envia a atualização para o banco se o status tiver mudado de fato
+            if (camera.status !== novoStatus) {
+                const dadosAtualizados = {
+                    nome: camera.nome,
+                    ip: camera.ip,
+                    status: novoStatus
+                };
+
+                await fetch(`${API_URL}/${camera.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosAtualizados)
+                });
             }
         } catch (error) {
-            console.error("Erro ao testar ping:", error);
-            alert("⚠️ Erro interno ao tentar realizar o teste de ping.");
-        } finally {
-            // Restaura o botão original
-            botao.innerText = textoOriginal;
-            botao.disabled = false;
+            console.error(`Erro no ping automático da câmera ${camera.ip}:`, error);
         }
     }
+
+    // Após testar todas, atualiza a tabela, gráficos e contadores na tela de uma vez só
+    carregarCamerasDoServidor();
+    console.log("✅ Verificação de rotina concluída e painel atualizado!");
+}
+
+// Configura o temporizador para rodar a cada 2 minutos
+// 2 minutos = 2 * 60 * 1000 = 120000 milissegundos
+setInterval(executarPingAutomatico, 120000);
