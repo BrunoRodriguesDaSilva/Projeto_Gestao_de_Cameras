@@ -53,31 +53,6 @@ function renderizarDashboard() {
     });
 
 
-    async function testarConexao(ip, botao) {
-        const textoOriginal = botao.innerText;
-        botao.innerText = "⚡ Testando...";
-        botao.disabled = true;
-
-        try {
-            // Faz a chamada para a nova rota de ping do backend
-            const response = await fetch(`http://localhost:3000/api/cameras/ping/${ip}`);
-            const resultado = await response.json();
-
-            if (resultado.online) {
-                alert(`✅ Sucesso! A câmera no IP ${ip} respondeu ao ping com sucesso e está ativa na rede.`);
-            } else {
-                alert(`❌ Falha! Não foi possível obter resposta do IP ${ip}. Verifique os cabos ou a alimentação da câmera.`);
-            }
-        } catch (error) {
-            console.error("Erro ao testar ping:", error);
-            alert("⚠️ Erro interno ao tentar realizar o teste de ping.");
-        } finally {
-            // Restaura o botão original
-            botao.innerText = textoOriginal;
-            botao.disabled = false;
-        }
-    }
-
     if (camerasFiltradas.length === 0) {
         tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-slate-500">Nenhuma câmera encontrada.</td></tr>`;
     } else {
@@ -279,3 +254,28 @@ function logout() {
     localStorage.removeItem('isLogged');
     window.location.href = 'index.html';
 }
+
+    async function testarConexao(ip, botao) {
+        const textoOriginal = botao.innerText;
+        botao.innerText = "⚡ Testando...";
+        botao.disabled = true;
+
+        try {
+            // Faz a chamada para a nova rota de ping do backend
+            const response = await fetch(`http://localhost:3000/api/cameras/ping/${ip}`);
+            const resultado = await response.json();
+
+            if (resultado.online) {
+                alert(`✅ Sucesso! A câmera no IP ${ip} respondeu ao ping com sucesso e está ativa na rede.`);
+            } else {
+                alert(`❌ Falha! Não foi possível obter resposta do IP ${ip}. Verifique os cabos ou a alimentação da câmera.`);
+            }
+        } catch (error) {
+            console.error("Erro ao testar ping:", error);
+            alert("⚠️ Erro interno ao tentar realizar o teste de ping.");
+        } finally {
+            // Restaura o botão original
+            botao.innerText = textoOriginal;
+            botao.disabled = false;
+        }
+    }
