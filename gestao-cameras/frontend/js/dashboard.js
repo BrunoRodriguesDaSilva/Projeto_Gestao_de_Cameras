@@ -100,7 +100,6 @@ function renderizarDashboard() {
                         <button onclick="prepararEdicao(${cam.id})" class="text-indigo-400 hover:text-indigo-300 font-medium text-xs bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1 rounded transition-colors">Editar</button>
                         <button onclick="deletarCamera(${cam.id})" class="text-red-400 hover:text-red-300 font-medium text-xs bg-red-500/10 hover:bg-red-500/20 px-2.5 py-1 rounded transition-colors">Excluir</button>
                     </td>
-                    // Dentro do seu loop forEach no dashboard.js, altere a coluna de ações para:
                     <td class="px-6 py-4 text-right space-x-2">
                         <button onclick="testarConexao('${cam.ip}', this)" class="text-emerald-400 hover:text-emerald-300 font-medium text-xs bg-emerald-500/10 hover:bg-emerald-500/20 px-2.5 py-1 rounded transition-colors">Testar</button>
                         <button onclick="prepararEdicao(${cam.id})" class="text-indigo-400 hover:text-indigo-300 font-medium text-xs bg-indigo-500/10 hover:bg-indigo-500/20 px-2.5 py-1 rounded transition-colors">Editar</button>
