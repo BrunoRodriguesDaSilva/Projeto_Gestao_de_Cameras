@@ -66,12 +66,12 @@ app.get('/api/cameras', (req, res) => {
 // Rota acionada quando o formulário do modal envia uma nova câmera
 app.post('/api/cameras', (req, res) => {
     const { nome, ip, status } = req.body;
-    
+
     // Insere os dados de forma segura usando placeholders (?) contra SQL Injection
     const sql = "INSERT INTO cameras (nome, ip, status) VALUES (?, ?, ?)";
     const params = [nome, ip, status];
-    
-    db.run(sql, params, function(err) {
+
+    db.run(sql, params, function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -86,18 +86,18 @@ app.post('/api/cameras', (req, res) => {
 app.put('/api/cameras/:id', (req, res) => {
     const { nome, ip, status } = req.body;
     const { id } = req.params;
-    
+
     const sql = "UPDATE cameras SET nome = ?, ip = ?, status = ? WHERE id = ?";
     const params = [nome, ip, status, id];
-    
-    db.run(sql, params, function(err) {
+
+    db.run(sql, params, function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         }
-        res.json({ 
-            mensagem: "Câmera atualizada com sucesso!", 
-            linhasAfetadas: this.changes 
+        res.json({
+            mensagem: "Câmera atualizada com sucesso!",
+            linhasAfetadas: this.changes
         });
     });
 });
@@ -106,15 +106,15 @@ app.put('/api/cameras/:id', (req, res) => {
 // Rota acionada ao clicar em excluir e confirmar no alerta
 app.delete('/api/cameras/:id', (req, res) => {
     const { id } = req.params;
-    
-    db.run("DELETE FROM cameras WHERE id = ?", id, function(err) {
+
+    db.run("DELETE FROM cameras WHERE id = ?", id, function (err) {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         }
-        res.json({ 
-            mensagem: "Câmera excluída com sucesso!", 
-            linhasAfetadas: this.changes 
+        res.json({
+            mensagem: "Câmera excluída com sucesso!",
+            linhasAfetadas: this.changes
         });
     });
 });
@@ -125,4 +125,25 @@ app.delete('/api/cameras/:id', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Servidor backend rodando em: http://localhost:${PORT}`);
     console.log(`💡 Pressione CTRL + C no terminal para desligar o servidor.`);
+});
+
+const { exec } = require('child_process');
+
+// ROTA PARA TESTAR O PING DA CÂMERA
+app.get('/api/cameras/ping/:ip', (req, res) => {
+    const ip = req.params.ip;
+
+    // Comando padrão para Windows (-n 2 envia apenas 2 pacotes para ser rápido)
+    // Se você usa Linux/Mac no servidor, mude "-n 2" para "-c 2"
+    const comando = `ping -n 2 ${ip}`;
+
+    exec(comando, (error, stdout, stderr) => {
+        if (error) {
+            // Se der erro, significa que o dispositivo não respondeu (Offline)
+            return res.json({ online: false, msg: "Dispositivo inacessível" });
+        }
+
+        // Se não deu erro, o ping respondeu com sucesso (Online)
+        return res.json({ online: true, msg: "Dispositivo online" });
+    });
 });
